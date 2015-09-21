@@ -6,7 +6,7 @@ This is a [Gradle](http://www.gradle.org/) plugin to allow easily performing Jav
 
 # Compatibility
 
-* Currently tested against Gradle 2.6; other versions may be compatible
+* Currently tested against Gradle 2.7; other versions may be compatible
 * Currently tested against Avro 1.7.7; other versions may be compatible
 * Java 7 or higher required
 
@@ -17,7 +17,7 @@ Add the following to your `build.gradle` file.  Substitute the desired version b
 ```groovy
 // Gradle 2.1 and later
 plugins {
-  id "com.commercehub.gradle.plugin.avro" version "VERSION"
+    id "com.commercehub.gradle.plugin.avro" version "VERSION"
 }
 
 // Earlier versions of Gradle
@@ -42,7 +42,7 @@ avro {
 }
 ```
 
-Optionally, you can also configure the output character encoding.
+Optionally, you can also configure the output character encoding (default `UTF-8`).
 
 ```groovy
 avro {
@@ -50,7 +50,8 @@ avro {
 }
 ```
 
-Optionally, you can also configure the visibility of generated fields.
+Optionally, you can also configure the visibility of generated fields to `PRIVATE`, `PUBLIC_DEPRECATED` (the default)
+or `PUBLIC`.
 
 ```groovy
 avro {
@@ -104,4 +105,53 @@ task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask)
 }
 
 compileJava.source(generateAvro.outputs)
+```
+
+# Handling dependencies
+
+If you have record/enum/fixed types that are referenced in other record types, just define the shared type in a separate file rather than inline in the definition of each record type that uses it.  The plugin will automatically recognize the dependency and compile the files in the correct order.  For example, instead of `Cat.avsc`:
+
+```json
+{
+    "name": "Cat",
+    "namespace": "example",
+    "type": "record",
+    "fields" : [
+        {
+            "name": "breed",
+            "type": {
+                "name": "Breed",
+                "type": "enum",
+                "symbols" : [
+                    "ABYSSINIAN", "AMERICAN_SHORTHAIR", "BIRMAN", "MAINE_COON", "ORIENTAL", "PERSIAN", "RAGDOLL", "SIAMESE", "SPHYNX"
+                ]
+            }
+        }
+    ]
+}
+```
+
+use `Breed.avsc`:
+
+```json
+{
+    "name": "Breed",
+    "namespace": "example",
+    "type": "enum",
+    "symbols" : ["ABYSSINIAN", "AMERICAN_SHORTHAIR", "BIRMAN", "MAINE_COON", "ORIENTAL", "PERSIAN", "RAGDOLL", "SIAMESE", "SPHYNX"]
+}
+```
+
+
+and `Cat.avsc`:
+
+```json
+{
+    "name": "Cat",
+    "namespace": "example",
+    "type": "record",
+    "fields" : [
+        {"name": "breed", "type": "Breed"}
+    ]
+}
 ```

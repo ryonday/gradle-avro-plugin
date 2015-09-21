@@ -1,7 +1,5 @@
 package com.commercehub.gradle.plugin.avro
 
-import org.gradle.testkit.runner.GradleRunner
-
 import java.nio.file.Files
 
 import static org.gradle.testkit.runner.TaskOutcome.FAILED
@@ -13,7 +11,7 @@ class AvroPluginFunctionalSpec extends FunctionalSpec {
         copyResource("user.avsc", avroDir)
 
         when:
-        def result = GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("build").build()
+        def result = run()
 
         then:
         result.task(":generateAvroJava").outcome == SUCCESS
@@ -29,7 +27,7 @@ class AvroPluginFunctionalSpec extends FunctionalSpec {
         copyResource("mail.avpr", avroDir)
 
         when:
-        def result = GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("build").build()
+        def result = run()
 
         then:
         result.task(":generateAvroJava").outcome == SUCCESS
@@ -43,7 +41,7 @@ class AvroPluginFunctionalSpec extends FunctionalSpec {
         copyResource("interop.avdl", avroDir)
 
         when:
-        def result = GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("build").build()
+        def result = run()
 
         then:
         result.task(":generateAvroProtocol").outcome == SUCCESS
@@ -61,7 +59,7 @@ class AvroPluginFunctionalSpec extends FunctionalSpec {
         copyResource("user.avsc", avroSubDir)
 
         when:
-        def result = GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("build").build()
+        def result = run()
 
         then:
         result.task(":generateAvroJava").outcome == SUCCESS
@@ -77,7 +75,7 @@ class AvroPluginFunctionalSpec extends FunctionalSpec {
         copyResource("mail.avpr", avroSubDir)
 
         when:
-        def result = GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("build").build()
+        def result = run()
 
         then:
         result.task(":generateAvroJava").outcome == SUCCESS
@@ -91,7 +89,7 @@ class AvroPluginFunctionalSpec extends FunctionalSpec {
         copyResource("interop.avdl", avroSubDir)
 
         when:
-        def result = GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("build").build()
+        def result = run()
 
         then:
         result.task(":generateAvroProtocol").outcome == SUCCESS
@@ -109,11 +107,12 @@ class AvroPluginFunctionalSpec extends FunctionalSpec {
         copyResource("enumMalformed.avsc", avroDir)
 
         when:
-        def result = buildAndFail()
+        def result = runAndFail()
 
         then:
         result.task(":generateAvroJava").outcome == FAILED
         result.standardError.contains("> Could not compile schema definition files:")
-        result.standardError.contains("* src/main/avro/enumMalformed.avsc: \"enum\" is not a defined name. The type of the \"gender\" field must be a defined name or a {\"type\": ...} expression.")
+        result.standardError.contains("* src/main/avro/enumMalformed.avsc: \"enum\" is not a defined name. The type of the \"gender\" " +
+                "field must be a defined name or a {\"type\": ...} expression.")
     }
 }

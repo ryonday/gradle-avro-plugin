@@ -25,18 +25,21 @@ public class DefaultAvroExtension implements AvroExtension {
     }
 
     @Override
-    public String getFieldVisibility() { return fieldVisibility; }
+    public String getFieldVisibility() {
+        return fieldVisibility;
+    }
     
     public void setFieldVisibility(String fieldVisibility) {
         this.fieldVisibility = fieldVisibility;
     }
 
     @Override
-    public String getTemplateDirectory() { return templateDirectory; }
+    public String getTemplateDirectory() {
+        return templateDirectory;
+    }
 
     public void setTemplateDirectory(String templateDirectory) {
         this.templateDirectory = templateDirectory;
     }
-
 
 }

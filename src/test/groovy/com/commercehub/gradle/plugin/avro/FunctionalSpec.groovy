@@ -28,10 +28,8 @@ abstract class FunctionalSpec extends Specification {
             throw new IllegalStateException("Did not find plugin classpath resource, run `testClasses` build task.")
         }
 
-        def pluginClasspath = pluginClasspathResource.readLines()
-            .collect { it.replace('\\', '\\\\') } // escape backslashes in Windows paths
-            .collect { "'$it'" }
-            .join(", ")
+         // escape backslashes in Windows paths and assemble
+        def pluginClasspath = pluginClasspathResource.readLines()*.replace('\\', '\\\\').collect { "'$it'" }.join(", ")
 
         // Add the logic under test to the test build
         buildFile << """
@@ -55,11 +53,11 @@ abstract class FunctionalSpec extends Specification {
         return testProjectDir.root.toPath().resolve(path)
     }
 
-    protected BuildResult runBuild() {
-        return GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("--info", "build").build()
+    protected BuildResult run(String... args = ["build"]) {
+        return GradleRunner.create().withProjectDir(testProjectDir.root).withArguments(args).build()
     }
 
-    protected BuildResult buildAndFail() {
-        return GradleRunner.create().withProjectDir(testProjectDir.root).withArguments("--info", "build").buildAndFail()
+    protected BuildResult runAndFail(String... args = ["build"]) {
+        return GradleRunner.create().withProjectDir(testProjectDir.root).withArguments(args).buildAndFail()
     }
 }
